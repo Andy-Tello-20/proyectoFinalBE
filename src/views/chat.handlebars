@@ -1,0 +1,19 @@
+<h1>Bienvenido al chat virtual</h1>
+<a href="/api/views/products">Volver al listado de productos</a>
+
+<div>
+  <h2>Aqui puedes escribir tus mensajes!</h2>
+
+  <form id="dataUser">
+    <input id="emailUser" type="text" placeholder="Correo del usuario" />
+    <input id="messageUser" type="text" placeholder="Ingrese su mensaje" />
+    <input type="submit" value="Enviar mensaje" />
+  </form>
+</div>
+
+<div>
+  <p id="renderMessages">{{messages}}</p>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/messages.js"></script>

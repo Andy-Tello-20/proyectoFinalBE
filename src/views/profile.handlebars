@@ -1,0 +1,47 @@
+<section>
+  <h1>Profile</h1>
+  <div>
+    <h3>Estos son tus datos</h3>
+    <p>Nombre: {{user.firstName}}</p>
+    <p>Apellido: {{user.lastName}}</p>
+    <p>Email: {{user.email}}</p>
+    <p>Edad: {{user.age}}</p>
+    <p>Rol: {{user.role}}</p>
+  </div>
+
+  <form id="changeRoleForm">
+    <span>Deseas cambiarte el rol?</span>
+    <input type="hidden" id="roleInput" value="{{user.role}}" />
+    <input type="button" value="Cambiar rol" onclick="sendData()" />
+  </form>
+
+  <div>
+    <form method="GET" action="/api/sessions/logout">
+      <span>Deseas cerrar sesión?</span>
+      <input type="submit" value="Cerrar Sesion" />
+    </form>
+  </div>
+
+  <a href="/api/sessions/current">Current</a>
+
+  <div>
+    <a href="/api/views/products">Volver hacia el menu de productos</a>
+  </div>
+</section>
+
+<script>
+  function sendData() {
+    const role = document.getElementById('roleInput').value;
+
+    fetch('/api/users/premium/{{user.id}}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ role: role }),
+    })
+      .then(response => response.json())
+      .then(data => alert("Debes cerrar sesión y volver a ingresar para visualizar los cambios"))
+      .catch((error) => console.error('Error:', error));
+  }
+</script>

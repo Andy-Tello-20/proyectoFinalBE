@@ -1,0 +1,52 @@
+<div>
+  <h1>Register</h1>
+  <form id="registerForm" method="POST">
+    <label for="firstName">First Name</label>
+    <input type="text" id="firstName" name="firstName" placeholder="First Name" />
+    <label for="lastName">Last Name</label>
+    <input type="text" id="lastName" name="lastName" placeholder="Last Name" />
+    <label for="email">Email</label>
+    <input type="text" id="email" name="email" placeholder="Email" />
+    <label for="age">Age</label>
+    <input type="number" id="age" name="age" placeholder="Age" />
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" placeholder="Password" />
+    <input type="submit" value="Register" />
+  </form>
+  <p>¿Ya tienes una cuenta? <a href="/">Ingresa aquí</a></p>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const registerForm = document.getElementById('registerForm');
+
+    registerForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      const formData = new FormData(registerForm);
+
+      const requestData = {};
+      formData.forEach((value, key) => {
+        requestData[key] = value;
+      });
+
+      fetch('/api/sessions/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+      })
+        .then(response => {
+          if (response.ok) {
+            window.location.href = '/';
+          } else {
+            throw new Error(response.statusText);
+          }
+        })
+        .catch(error => {
+          alert('Ha ocurrido un error al procesar la solicitud. Por favor, inténtalo nuevamente. Puede ser que falten campos o que el correo ya exista.');
+        });
+    });
+  });
+</script>

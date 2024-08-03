@@ -1,0 +1,233 @@
+<h1>Todos los productos</h1>
+
+
+<div>
+  <h3>Bienvenido {{user.firstName}} {{user.lastName}}</h3>
+  <span>Tu rol es: <b>{{user.role}}</b></span>
+  <p>Deseas visitar tu perfil? <a href="/api/views/profile">Dirígete desde aquí</a></p>
+  <p>Quieres visualizar tu carrito de compras? <a href="/api/views/carts/{{user.cart}}">Ir al
+      carrito</a> </p>
+  {{#if user.admin}}
+  <a href="/api/views/usersManagement">Ir a administrar usuarios</a>
+  {{/if}}
+
+</div>
+<ul>
+  {{#if user.user}}
+  <a href="/api/chat">Ingresa al chat <b>aquí!</b></a>
+  {{/if}}
+
+  {{#if user.admin}}
+  <p>Como administrador, puede agregar, editar o eliminar productos de la lista.</p>
+  <form class="addProductForm" data-owner="{{user.id}}" method="POST" action="#">
+    <h4>Agregar nuevo producto</h4>
+    <label for="title">Título</label>
+    <input type="text" name="title" placeholder="Titulo" />
+    <label for="stock">Stock</label>
+    <input type="text" name="stock" placeholder="Stock" />
+    <label for="value">Valor</label>
+    <input type="text" name="value" placeholder="Precio" />
+    <label for="code">Codigo</label>
+    <input type="text" name="code" placeholder="Codigo" />
+    <input type="submit" value="Agregar" />
+  </form>
+  {{/if}}
+
+  {{#if user.premium}}
+  <p>Como usuario premium, puede agregar productos de la lista.</p>
+  <form class="addProductForm" data-owner="{{user.id}}" method="POST" action="#">
+    <h4>Agregar nuevo producto</h4>
+    <label for="title">Título</label>
+    <input type="text" name="title" placeholder="Titulo" />
+    <label for="stock">Stock</label>
+    <input type="text" name="stock" placeholder="Stock" />
+    <label for="value">Valor</label>
+    <input type="text" name="value" placeholder="Precio" />
+    <label for="code">Codigo</label>
+    <input type="text" name="code" placeholder="Codigo" />
+    <input type="submit" value="Agregar" />
+  </form>
+  {{/if}}
+
+
+  {{#if user.user}}
+  {{#each products.docs}}
+  <li>
+    <h2>{{this.title}}</h2>
+    <p>{{this.description}}
+      <p />
+    <p>Stock: {{this.stock}}</p>
+    <p>${{this.price}}</p>
+    {{#if this.showForm}}
+    <form method="POST" class="addProductToCart" data-id="{{this.id}}" data-cart="{{../user.cart}}"
+      action="/api/carts/{{../user.cart}}/product/{{this.id}}">
+      <button type="submit">Agregar al carrito</button>
+    </form>
+    {{/if}}
+  </li>
+  {{/each}}
+  {{/if}}
+
+  {{#if user.admin}}
+  {{#each products.docs}}
+  <li>
+    <h2>{{this.title}}</h2>
+    <p>{{this.description}}
+      <p />
+    <p>Stock: {{this.stock}}</p>
+    <p>${{this.price}}</p>
+  </li>
+  <form class="editProductForm" data-id="{{this.id}}" method="POST" action="#">
+    <h4>Cambiar nombre del titulo del producto</h4>
+    <label for="title-{{this.id}}">Título</label>
+    <input type="text" id="title-{{this.id}}" name="title" placeholder="Titulo" />
+    <input type="submit" value="Cambiar" />
+  </form>
+  <button class="deleteProductButton" data-id="{{this.id}}">Eliminar Producto</button>
+  {{/each}}
+  {{/if}}
+
+  {{#if user.premium}}
+  {{#each products.docs}}
+  <li>
+    <h2>{{this.title}}</h2>
+    <p>{{this.description}}
+      <p />
+    <p>Stock: {{this.stock}}</p>
+    <p>${{this.price}}</p>
+  </li>
+  {{#if this.isNotFromOwner}}
+  <form method="POST" class="addProductToCart" data-id="{{this.id}}" data-cart="{{../user.cart}}"
+    action="/api/carts/{{../user.cart}}/product/{{this.id}}">
+    <button type="submit">Agregar al carrito</button>
+  </form>
+  {{/if}}
+  {{#if this.isOwner}}
+  <button class="deleteProductButton" data-id="{{this.id}}">Eliminar Producto</button>
+  {{/if}}
+  {{/each}}
+  {{/if}}
+
+</ul>
+<a>{{products.page}}</a>
+{{#if products.hasPrevPage}}
+<a href="/api/views/products?page={{products.prevPage}}">Prev Page</a>
+{{/if}}
+{{#if products.hasNextPage}}
+<a href="/api/views/products?page={{products.nextPage}}">Next Page</a>
+{{/if}}
+
+<script>
+  document.addEventListener('submit', function (e) {
+    if (e.target.matches('.editProductForm')) {
+      e.preventDefault();
+      const form = e.target;
+      const productId = form.getAttribute('data-id');
+      const newTitle = form.querySelector('[name="title"]').value;
+
+      fetch(`/api/products/${productId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: newTitle }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Producto actualizado:', data);
+          window.location.reload()
+        })
+        .catch((error) => {
+          console.error('Error al actualizar el producto:', error);
+        });
+    }
+  });
+  document.addEventListener('submit', function (e) {
+    if (e.target.matches('.addProductToCart')) {
+      e.preventDefault();
+      const form = e.target;
+      const productId = form.getAttribute('data-id');
+      const cartId = form.getAttribute('data-cart');
+      fetch(`/api/carts/${cartId}/product/${productId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert("Producto agregado")
+        })
+        .catch((error) => {
+          console.error('Error al actualizar el producto:', error);
+        });
+    }
+  });
+  document.addEventListener('click', function (e) {
+    if (e.target.matches('.deleteProductButton')) {
+      e.preventDefault();
+      const productId = e.target.getAttribute('data-id');
+
+      if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+        fetch(`/api/products/${productId}`, {
+          method: 'DELETE'
+        })
+          .then(response => {
+            if (response.ok) {
+              window.location.reload(); // Recargar la página para reflejar cambios
+            } else {
+              throw new Error('Algo salió mal');
+            }
+          })
+          .catch(error => {
+            console.error('Error al eliminar el producto:', error);
+          });
+      }
+    }
+  });
+  document.addEventListener('submit', function (e) {
+    if (e.target.matches('.addProductForm')) {
+      e.preventDefault();
+      const form = e.target;
+      const id = form.getAttribute('data-owner');
+      const title = form.querySelector('[name="title"]').value;
+      const stock = form.querySelector('[name="stock"]').value;
+      const value = form.querySelector('[name="value"]').value;
+      const code = form.querySelector('[name="code"]').value;
+      fetch(`/api/products/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title, stock, price: value, code, owner: id }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          window.location.reload()
+        })
+        .catch((error) => {
+          console.error('Error al actualizar el producto:', error);
+        });
+    }
+  });
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const userCartId = "{{user.cart}}"; // Obtener el cartId del usuario desde Handlebars
+
+    // Verificar si el usuario ya tiene un cartId
+    if (!userCartId) {
+      // Si no tiene, crear un nuevo carrito
+      fetch("/api/carts", { method: "POST" })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Nuevo carrito creado:', data);
+        })
+        .catch(error => {
+          console.error('Error al crear el carrito:', error);
+        });
+    } else {
+      console.log('El usuario ya tiene un carrito:', userCartId);
+    }
+  });
+</script>

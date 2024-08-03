@@ -1,0 +1,82 @@
+<div>
+  <h1>Usuarios</h1>
+  <section>
+    {{#each data}}
+    <p>Nombre: {{this.firstName}}</p>
+    <p>Apellido: {{this.lastName}}</p>
+    <p>Email: {{this.email}}</p>
+    <p>Edad: {{this.age}}</p>
+    <p>Rol: {{this.rol}}</p>
+
+    <form id="modifyForm" method="PUT">
+      <label for="putRol">Modificar rol</label>
+      <select name="modifyUser" class="putRol">
+        <option value="">Elegí un rol</option>
+        <option value="premium">Premium</option>
+        <option value="admin">Admin</option>
+        <option value="user">Usuario Normal</option>
+      </select>
+      <input type="button" class="modifyRoleButton" value="Cambiar rol" data-id="{{this.id}}" />
+
+    </form>
+
+    <form id="deleteForm" method="DELETE">
+      <input type="hidden" name="deleteUser" value="{{this.id}}" />
+      <input type="button" class="deleteUserButton" value="Eliminar usuario" data-id="{{this.id}}" />
+    </form>
+    <br>
+    {{/each}}
+  </section>
+
+  <div>
+    <form method="GET" action="/api/sessions/logout">
+      <span>Deseas cerrar sesión?</span>
+      <input type="submit" value="Cerrar Sesion" />
+    </form>
+  </div>
+
+  <div>
+    <a href="/api/views/products">Volver hacia el menu de productos</a>
+  </div>
+</div>
+
+<script>
+  function sendData() {
+    const userId = this.getAttribute('data-id');
+    const selectedRole = this.parentNode.querySelector('.putRol').value;
+    fetch(`/api/users/modifyRol?id=${userId}&rol=${selectedRole}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(data => alert("Debes actualizar la pagina para ver el cambio"))
+      .catch((error) => alert("Ocurrió un error inesperado"))
+  }
+
+  function deleteUser() {
+    const userId = this.getAttribute('data-id');
+    fetch(`/api/users/user?id=${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(data => alert("Usuario eliminado exitosamente. Actualice el sitio para ver el cambio"))
+      .catch((error) => alert("Ocurrió un error al eliminar el usuario"))
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const modifyButtons = document.querySelectorAll('.modifyRoleButton');
+    modifyButtons.forEach(button => {
+      button.addEventListener('click', sendData);
+    });
+
+    const deleteButtons = document.querySelectorAll('.deleteUserButton');
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', deleteUser);
+    });
+  });
+</script>

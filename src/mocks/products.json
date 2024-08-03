@@ -1,0 +1,92 @@
+[
+  {
+    "title": "producto prueba",
+    "description": "este es un producto prueba",
+    "price": 200,
+    "thumbnail": "Sin imagen",
+    "code": "abc123",
+    "stock": 25,
+    "id": 1
+  },
+  {
+    "title": "Camiseta de manga larga",
+    "description": "Camiseta de manga larga para hombre",
+    "price": 750,
+    "thumbnail": "https://example.com/camiseta-larga.png",
+    "code": "CAM-002",
+    "stock": 8,
+    "id": 2
+  },
+  {
+    "title": "Pantalón de vestir",
+    "description": "Pantalón de vestir para hombre",
+    "price": 1500,
+    "thumbnail": "https://example.com/pantalon-vestir.png",
+    "code": "PAN-002",
+    "stock": 3,
+    "id": 3
+  },
+  {
+    "title": "Zapatillas deportivas",
+    "description": "Zapatillas deportivas para mujer",
+    "price": 1200,
+    "thumbnail": "https://example.com/zapatillas.png",
+    "code": "ZAP-001",
+    "stock": 12,
+    "id": 4
+  },
+  {
+    "title": "Mochila escolar",
+    "description": "Mochila escolar para niños",
+    "price": 800,
+    "thumbnail": "https://example.com/mochila.png",
+    "code": "MOC-001",
+    "stock": 15,
+    "id": 5
+  },
+  {
+    "title": "Reloj de pulsera",
+    "description": "Reloj de pulsera para hombre",
+    "price": 2500,
+    "thumbnail": "https://example.com/reloj.png",
+    "code": "REL-001",
+    "stock": 2,
+    "id": 6
+  },
+  {
+    "title": "Silla de escritorio",
+    "description": "Silla de escritorio para oficina",
+    "price": 4000,
+    "thumbnail": "https://example.com/silla.png",
+    "code": "SIL-001",
+    "stock": 1,
+    "id": 7
+  },
+  {
+    "title": "Juego de té",
+    "description": "Juego de té de porcelana",
+    "price": 1500,
+    "thumbnail": "https://example.com/te.png",
+    "code": "TE-001",
+    "stock": 6,
+    "id": 8
+  },
+  {
+    "title": "Plancha de cabello",
+    "description": "Plancha de cabello profesional",
+    "price": 2000,
+    "thumbnail": "https://example.com/plancha.png",
+    "code": "PLA-001",
+    "stock": 4,
+    "id": 9
+  },
+  {
+    "title": "Sartén de cerámica",
+    "description": "Sartén de cerámica antiadherente",
+    "price": 1000,
+    "thumbnail": "https://example.com/sarten.png",
+    "code": "SAR-001",
+    "stock": 9,
+    "id": 10
+  }
+]

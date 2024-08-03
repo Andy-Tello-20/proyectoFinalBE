@@ -1,0 +1,44 @@
+<h1>Login</h1>
+<form id="loginForm" method="POST" action="/api/sessions/login">
+  <label for="email">Email</label>
+  <input type="text" id="email" name="email" placeholder="Email" />
+  <label for="password">Contraseña</label>
+  <input type="password" id="password" name="password" placeholder="Password" />
+  <input type="submit" value="Login" />
+</form>
+<p>No estás registrado aún?
+  <a href="/api/views/register">Registrate</a>
+</p>
+<button class="recoverPassword">Recuperar contraseña</button>
+</div>
+
+<script>
+  document.addEventListener('click', function (e) {
+    if (e.target.matches('.recoverPassword')) {
+      e.preventDefault();
+      const userEmail = prompt('Por favor, introduce tu email para recuperar tu contraseña:');
+      if (userEmail) {
+        fetch(`/api/recovery-password`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: userEmail })
+        })
+          .then(response => {
+            if (response.ok) {
+              alert('Instrucciones para recuperar tu contraseña han sido enviadas a tu email.');
+              return;
+            } else if (response.status === 404) {
+              throw new Error(response.statusText);
+            } else {
+              throw new Error("Ha ocurrido un error interno");
+            }
+          })
+          .catch(error => {
+            alert(`Error al procesar la solicitud. Detalle: ${error.message}`);
+          });
+      }
+    }
+  });
+</script>

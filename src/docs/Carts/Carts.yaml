@@ -1,0 +1,345 @@
+paths:
+  /api/carts:
+    get:
+      summary: Get all carts.
+      tags:
+        - Carts
+      responses:
+        200:
+          description: A list of carts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Cart"
+        500:
+          description: "Internal Server Error"
+    post:
+      summary: Create a new cart.
+      tags:
+        - Carts
+      requestBody:
+        required: false
+      responses:
+        201:
+          description: Cart created. Returns the newly-created cart.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        500:
+          description: "Internal Server Error"
+
+  /api/carts/{cid}:
+    get:
+      summary: Get a cart by its ID.
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: The ID of the cart to be returned.
+          schema:
+            type: string
+      responses:
+        200:
+          description: The cart was found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        404:
+          description: The specified cart could not be found.
+        500:
+          description: "Internal Server Error"
+    put:
+      summary: Update a cart by replacing its products with the provided list.
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: The ID of the cart to update.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CartUpdate"
+      responses:
+        200:
+          description: Cart updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        404:
+          description: The specified cart could not be found.
+        500:
+          description: "Internal Server Error"
+    delete:
+      summary: Delete a cart by its ID.
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: The ID of the cart to delete.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Cart deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        404:
+          description: The specified cart could not be found.
+        500:
+          description: "Internal Server Error"
+
+  /api/carts/{cid}/product/{pid}:
+    post:
+      summary: Add a product to a cart. If the product is already in the cart, it will be added with an increased quantity.
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: The ID of the cart.
+          schema:
+            type: string
+        - in: path
+          name: pid
+          required: true
+          description: The ID of the product.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Product added to cart successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        404:
+          description: The specified cart or product could not be found.
+        500:
+          description: "Internal Server Error"
+    put:
+      summary: Update the quantity of a product in a cart.
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: The ID of the cart.
+          schema:
+            type: string
+        - in: path
+          name: pid
+          required: true
+          description: The ID of the product.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                  description: The new quantity of the product in the cart.
+      responses:
+        200:
+          description: Product quantity updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        404:
+          description: The specified cart or product could not be found.
+        500:
+          description: "Internal Server Error"
+    delete:
+      summary: Remove a product from a cart.
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: The ID of the cart.
+          schema:
+            type: string
+        - in: path
+          name: pid
+          required: true
+          description: The ID of the product to remove.
+          schema:
+            type: string
+      responses:
+        200:
+          description: Product removed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cart"
+        404:
+          description: The specified cart or product could not be found.
+        500:
+          description: "Internal Server Error"
+
+  /api/carts/{cid}/purchase:
+    post:
+      summary: Purchase products in a cart.
+      tags:
+        - Carts
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: The ID of the cart to purchase from.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                products:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        description: The ID of the product.
+                      quantity:
+                        type: integer
+                        description: The quantity of the product to purchase.
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the purchaser.
+      responses:
+        200:
+          description: Purchase successful.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message indicating successful purchase.
+                  order:
+                    $ref: "#/components/schemas/Order"
+        400:
+          description: Bad request. Invalid input data.
+        404:
+          description: The specified cart could not be found.
+        500:
+          description: "Internal Server Error"
+
+components:
+  schemas:
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: The cart ID.
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: The ID of the product.
+              title:
+                type: string
+                description: The product name.
+              description:
+                type: string
+                description: Description of the product.
+              price:
+                type: number
+                description: Price of the product.
+              stock:
+                type: integer
+                description: Stock information about this product.
+              code:
+                type: string
+                description: Code or SKU for the product.
+              category:
+                type: string
+                description: Category to which the product belongs.
+              status:
+                type: string
+                description: Available, Unavailable, etc.
+              images:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: The name of the image.
+              quantity:
+                type: integer
+                description: The quantity of the product in the cart.
+      example:
+        _id: "65beb1b5c9420e6ad4f11a85"
+        products:
+          - id: "643f4f6fec8f50218d7e93c5"
+            title: "Random Product 5"
+            description: "Description of Product 5"
+            price: 200
+            stock: 200
+            code: "AAA5"
+            category: "Testing"
+            status: "Available"
+            images:
+              - name: "non-image"
+            quantity: 7
+          - id: "643f4f79ec8f50218d7e93c9"
+            title: "Random Product 7"
+            description: "Description of Product 7"
+            price: 400
+            stock: null
+            code: "AAA7"
+            category: "Testing"
+            status: "Available"
+            images:
+              - name: "non-image"
+            quantity: 4
+  requestBodies:
+    CartUpdate:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            type: object
+            properties:
+              _id:
+                type: string
+                description: The ID of the product.
+              quantity:
+                type: integer
+                description: The quantity of the product in the cart.

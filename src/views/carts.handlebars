@@ -1,0 +1,195 @@
+<h1>Menu del carrito de compras</h1>
+
+{{#if cart}}
+{{#each cart.products}}
+<ul>
+  <li>
+    <h2>{{this.product.title}}</h2>
+    <p>{{this.product.description}}
+      <p />
+    <p>Price: {{this.product.price}}</p>
+    <p>Code: {{this.product.code}}</p>
+    <p>Cantidad: {{this.quantity}}</p>
+
+  </li>
+</ul>
+{{else}}
+<h3>No hay productos en el carrito todavía</h3>
+{{/each}}
+{{/if}}
+
+<a href="/api/views/products">Ir al menú de productos</a>
+<br>
+<br>
+<h3>Monto Total: $<strong id="importe">{{totalSum}}</strong></h3>
+
+
+<button id="cMedios" href="#" >Confirmar Compra</button>
+
+{{#if cart.products}}
+
+<div id="metodospago" style="border: 1px solid blue">
+  <br>
+</div>
+<br>
+<a class="purchase" data-id="{{cart._id}}" data-email="{{email}}" data-products="{{serializedProducts}}" href="#"
+  onclick="pagar()">Pagar</a>
+<br>
+<br>
+
+
+
+{{/if}}
+
+<div id="resultado" style="border: 1px solid green">
+  <br>
+</div>
+
+<script>
+  document.addEventListener('click', async function (e) {
+    if (e.target.matches('.purchase')) {
+      e.preventDefault();
+      const cartId = e.target.getAttribute('data-id');
+      const email = e.target.getAttribute('data-email');
+      let products = JSON.parse(e.target.getAttribute('data-products'));
+
+      if (confirm('¿Estás seguro de que deseas finalizar la compra?')) {
+        try {
+          const response = await fetch(`/api/carts/${cartId}/purchase`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ products: products, email }),
+          });
+
+          if (response.ok) {
+            const res = await response.json();
+            if (res?.productsNotPurchased) {
+              alert("Algunos productos no se han podido agregar a tu pedido, en el carrito podrás ver que cantidad ha quedado por comprar de qué producto.");
+
+              await fetch(`/api/carts/${cartId}`, {
+                method: 'PUT',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ products: res.productsNotPurchased }),
+              });
+
+              if (res?.tickets.length > 0) { alert(`Finalizando Pedido`); }
+            } else if (res.data) {
+              for (let p of res.data) {
+                await fetch(`/api/carts/${cartId}/products/${p.idProduct}`, {
+                  method: 'DELETE',
+                  headers: { "Content-Type": "application/json" },
+                });
+              }
+              alert(`Finalizando Pedido`);
+            }
+            //window.location.href = "/api/views/payment/";
+          } else {
+            throw new Error('Algo salió mal');
+          }
+        } catch (error) {
+          console.error('Error al finalizar la compra:', error);
+        }
+      }
+    }
+  });
+</script>
+
+
+<script>
+  const stripe = Stripe("pk_test_51PddhERu5oi1L0NTKwwgMODPHCwKfhilL5CVXXA0HzZTcuuNhKnw3QNiegO4O5N0SoDPrL7jttLJzLVfEliTWZ5Q00EsMjKPD5");
+     
+
+let medios=document.getElementById('cMedios')
+
+medios.addEventListener('click', () => {
+
+cargarMedios() 
+})
+
+const cargarMedios = async () => {
+
+    let importe = document.getElementById("importe")
+
+
+
+    importe = parseFloat(importe.textContent)
+
+  console.log('importe es:', importe)
+
+    if (importe < 1 || isNaN(importe)) {
+        alert("Monto erroneo")
+        return
+    }
+    importe = importe * 100
+
+
+ 
+
+    const response = await fetch("/api/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ importe }),
+    });
+    const { clientSecret } = await response.json();
+    console.log(clientSecret)
+
+   
+    const appearance = {
+        theme: 'stripe',
+    };
+    elements = stripe.elements({ appearance, clientSecret });
+
+    const paymentElementOptions = {
+        layout: "tabs",
+    };
+
+    const paymentElement = elements.create("payment", paymentElementOptions);
+    paymentElement.mount("#metodospago");
+}
+
+
+const pagar = async () => {
+
+const currentUrl = window.location.href
+  
+    const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+            // Make sure to change this to your payment completion page
+            return_url: currentUrl,
+        },
+    });
+
+    // This point will only be reached if there is an immediate error when
+    // confirming the payment. Otherwise, your customer will be redirected to
+    // your `return_url`. For some payment methods like iDEAL, your customer will
+    // be redirected to an intermediate site first to authorize the payment, then
+    // redirected to the `return_url`.
+    console.log(error.message)
+    document.getElementById("resultado").textContent = error.message
+    // if (error.type === "card_error" || error.type === "validation_error") {
+    //     showMessage(error.message);
+    // } else {
+    //     showMessage("An unexpected error occurred.");
+    // }
+
+}
+
+
+const verResultado=async(clientSecret)=>{
+   
+    const { paymentIntent } = await stripe.retrievePaymentIntent(clientSecret);
+    alert(`Estado de la Compra: ${paymentIntent.status}`)
+    document.getElementById("resultado").textContent=`Estado de la Compra: ${paymentIntent.status}`
+}
+
+// se ejecuta siempre...
+const clientSecret = new URLSearchParams(window.location.search).get(
+    "payment_intent_client_secret"
+);
+
+if (clientSecret) {
+    verResultado(clientSecret)
+}
+
+</script>

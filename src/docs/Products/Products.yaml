@@ -1,0 +1,178 @@
+paths:
+  /api/products:
+    get:
+      summary: Get all products.
+      tags:
+        - Products
+      responses:
+        200:
+          description: A list of products.
+          content:
+            application/json:
+              schema:
+              type: array
+              items:
+              $ref: "#/components/schemas/Product"
+        500:
+          description: "Internal Server Error"
+    post:
+      summary: Create a new product.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Product"
+      responses:
+        201:
+          description: The created product.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/requestBodies/updateProduct"
+
+  /api/products/product/{pid}:
+    get:
+      summary: Get a product by its ID.
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          description: The ID of the product to be returned.
+          schema:
+            type: string
+      responses:
+        200:
+          description: The product was found.
+          content:
+            application/json:
+              schema:
+              $ref: "#/components/schemas/Product"
+        404:
+          description: The specified product could not be found.
+        500:
+          description: "Internal Server Error"
+
+  /api/products/{pid}:
+    put:
+      summary: Update an existing product.
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          description: The ID of the product to be returned.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/requestBodies/updateProduct"
+      responses:
+        200:
+          description: Successfully updated the product. No data is returned.
+        404:
+          description: The specified product could not be found.
+        500:
+          description: "Internal Server Error"
+    delete:
+      summary: Delete a specific product.
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: pid
+          required: true
+          description: The ID of the product to be deleted.
+      responses:
+        200:
+          description: The product was successfully deleted. No data is returned.
+        404:
+          description: The specified product could not be found.
+        500:
+          description: "Internal Server Error"
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: The product ID.
+        title:
+          type: string
+          description: The product name.
+        description:
+          type: string
+          description: Description of the product.
+        code:
+          type: string
+          description: Code or SKU for the product.
+        price:
+          type: string
+          description: Price of the product.
+        status:
+          type: string
+          description: Available, Unavailable, etc.
+        stock:
+          type: string
+          description: Stock information about this product.
+        category:
+          type: string
+          description: Category to which the product belongs.
+        thumbnail:
+          type: Array
+          description: An array containing URLs of images related to the product
+        owner:
+          type: string
+          description: User who owns the product.
+      example:
+        _id: 643f4f4fec8f50218d7e21bc
+        title: iPhone XR Black
+        description: The iPhone XR is a smartphone designed and manufactured by Apple Inc. It was released in September 2011
+        code: I1578ZM
+        price: "850"
+        status: 200
+        stock: 15
+        category: Electronics
+        thumbnail: []
+        owner: 643f4f4fec8f50218d7e93ad
+  requestBodies:
+    updateProduct:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The product name.
+        description:
+          type: string
+          description: Description of the product.
+        code:
+          type: string
+          description: Code or SKU for the product.
+        price:
+          type: string
+          description: Price of the product.
+        stock:
+          type: string
+          description: Stock information about this product.
+        category:
+          type: string
+          description: Category to which the product belongs.
+        thumbnail:
+          type: Array
+          description: An array containing URLs of images related to the product
+      example:
+        title: iPhone XR Black
+        description: The iPhone XR is a smartphone designed and manufactured by Apple Inc. It was released in September 2011
+        code: I1578ZM
+        price: "850"
+        stock: 200
+        category: Electronics
+        thumbnail: []

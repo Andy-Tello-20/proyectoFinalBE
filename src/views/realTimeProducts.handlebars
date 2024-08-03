@@ -1,0 +1,48 @@
+<h1>Hey, here you can see your products!</h1>
+
+<h2>Total products: </h2>
+
+<div id="allProducts">
+</div>
+
+<div>
+  <h2>Add products here below: </h2>
+  <form id="form">
+    <h3>Title</h3>
+    <input type="text" name="title" placeholder="title" id="title" />
+
+    <h3>Description</h3>
+    <input
+      type="text"
+      name="description"
+      placeholder="description"
+      id="description"
+    />
+
+    <h3>Price</h3>
+    <input type="number" name="price" placeholder="price" id="price" />
+
+    <h3>Code</h3>
+    <input type="text" name="code" placeholder="code" id="code" />
+
+    <h3>Stock</h3>
+    <input type="text" name="stock" placeholder="stock" id="stock" />
+    <br />
+    <br />
+    <button type="submit">Add product</button>
+  </form>
+</div>
+
+<div>
+  <h3>Delete product by ID here below: </h3>
+  <form id="formDelete">
+    <input type="text" name="id" placeholder="product ID" id="deleteId" />
+    <br />
+    <br />
+    <button type="submit">Delete product</button>
+  </form>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/index.js"></script>
