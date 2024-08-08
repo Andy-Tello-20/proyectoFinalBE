@@ -18,7 +18,6 @@ const cargarMedios = async () => {
     importe = importe * 100
 
 
-    // 2) realizo petición al back, pidiendo un payment-intent
 
     const response = await fetch("/api/views/create-payment-intent", {
         method: "POST",
@@ -28,7 +27,7 @@ const cargarMedios = async () => {
     const { clientSecret } = await response.json();
     console.log(clientSecret)
 
-    // 5) generar elementos de pago y asociar div de nuestro html al llamar a .mount
+
     const appearance = {
         theme: 'stripe',
     };

@@ -61,6 +61,9 @@ router.post("/recovery-password", async (req, res, next) => {
   try {
     const { email } = req.body;
     const user = await UsersService.getByEmail(email);
+
+
+
     if (!user) {
       logger.warning(`Email: ${email} no registrado`);
       return CustomError.create({
@@ -69,13 +72,19 @@ router.post("/recovery-password", async (req, res, next) => {
         message: messageError.NOT_FOUND,
       });
     }
+
     const token = generateTokenInEmail(user);
     const emailService = EmailService.getInstance();
+
+
     const result = await emailService.sendEmail(
       `${user.email}`,
       "Reestablecimiento de contraseña",
       `<h1>Este correo tiene validez por 1 hora.</h1><br><a href="http://localhost:8080/api/views/generate-new-password?token=${token}" target="_blank">Reestablecer contraseña</a>`
     );
+
+   
+  
 
     if (!result) {
       logger.warning(`Ha ocurrido un error al enviar el email`);
@@ -91,6 +100,8 @@ router.post("/recovery-password", async (req, res, next) => {
     next(error);
   }
 });
+
+
 router.post("/verify-password", async (req, res, next) => {
   try {
     const { password, email } = req.body;

@@ -7,7 +7,7 @@ notifications.get("/send-otp", async (req, res) => {
   const twilioService = TwilioService.getInstance();
 
   const response = await twilioService.sendSMS(
-    "+543364524350",
+    "whatsapp:+5493548507593",
     "Twilio service has been enabled"
   );
 

@@ -1,5 +1,6 @@
 import passport from "passport";
 import { Router } from "express";
+import { validateToken } from "../../helpers/jwt.js";
 import { CartManagerMongo, ProductManager } from "../../dao/index.js";
 import { Users, productsMongo } from "../../dao/models/index.js";
 import { authMiddleware, authRolesMiddleware } from "../../helpers/jwt.js";
@@ -104,6 +105,7 @@ router.get("/register", async (req, res) => {
     res.status(500).send({ message: error });
   }
 });
+
 router.get("/generate-new-password", async (req, res, next) => {
   try {
     const { token } = req.query;

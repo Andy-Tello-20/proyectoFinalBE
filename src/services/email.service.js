@@ -8,6 +8,9 @@ export default class EmailService {
       service: config.MAIL.emailService,
       port: config.MAIL.emailPort,
       auth: { user: config.MAIL.emailUser, pass: config.MAIL.emailPassword },
+      tls: {
+        rejectUnauthorized: false
+      }
     });
   }
 
